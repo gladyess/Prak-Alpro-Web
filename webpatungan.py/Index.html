@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patungan Jadi Lebih Mudah</title>
+    <style>
+        :root {
+            --pink-bg: #f6c9d5;
+            --pink-soft: #efb4c3;
+            --pink-light: #e99caf;
+            --pink-border: #c77f90;
+            --pink-accent: #60352f;
+            --pink-accent-dark: #472722;
+            --brown-dark: #24120f;
+            --brown: #351b17;
+            --brown-soft: #e8c0c1;
+            --pink-field: #f7d0d9;
+            --shadow-soft: 0 12px 32px rgba(53, 27, 23, 0.12);
+        }
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+            background: linear-gradient(145deg, #f9dce3 0%, var(--pink-bg) 48%, #f2c3d0 100%);
+            color: var(--brown-dark);
+            margin: 0;
+            padding: 32px 20px;
+        }
+        .floating-decorations {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .floating-decorations span {
+            position: absolute;
+            bottom: -50px;
+            opacity: 0;
+            animation: float-money 11s ease-in-out infinite;
+        }
+        .floating-decorations span:nth-child(1) { left: 8%; font-size: 26px; animation-delay: 0s; }
+        .floating-decorations span:nth-child(2) { left: 24%; font-size: 22px; animation-delay: 3s; }
+        .floating-decorations span:nth-child(3) { left: 42%; font-size: 24px; animation-delay: 6s; }
+        .floating-decorations span:nth-child(4) { left: 61%; font-size: 20px; animation-delay: 1.5s; }
+        .floating-decorations span:nth-child(5) { left: 77%; font-size: 25px; animation-delay: 4.5s; }
+        .floating-decorations span:nth-child(6) { left: 92%; font-size: 21px; animation-delay: 7.5s; }
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 760px;
+            margin: 0 auto;
+            background: var(--pink-bg);
+            padding: clamp(22px, 4vw, 40px);
+            border-radius: 28px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--pink-border);
+        }
+        h1 {
+            text-align: center; 
+            color: var(--pink-accent-dark); 
+            font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+            font-size: clamp(28px, 4vw, 32px);
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: 0.8px;
+            text-shadow: 0 2px 0 rgba(233, 156, 175, 0.3);
+            margin: 4px 0 30px;
+            animation: title-pop-in 0.85s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+            transform-origin: center;
+        }
+        h2 { 
+            color: var(--brown); 
+            font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card {
+            border: 1px solid rgba(199, 127, 144, 0.72);
+            border-radius: 20px;
+            padding: clamp(18px, 3vw, 26px);
+            margin-bottom: 22px;
+            background: linear-gradient(145deg, #f1bcc9, var(--pink-soft));
+            animation: card-enter 0.55s ease-out both;
+            box-shadow: 0 5px 16px rgba(53, 27, 23, 0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+        .card:nth-of-type(1) { animation-delay: 0.08s; }
+        .card:nth-of-type(2) { animation-delay: 0.16s; }
+        .card:nth-of-type(3) { animation-delay: 0.24s; }
+        .card:nth-of-type(4) { animation-delay: 0.32s; }
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--pink-accent);
+            box-shadow: 0 10px 24px rgba(53, 27, 23, 0.12);
+        }
+        input, select {
+            width: 100%;
+            min-height: 48px;
+            padding: 12px 14px;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            border: 1px solid var(--pink-border);
+            border-radius: 12px;
+            background-color: var(--pink-field);
+            color: var(--brown-dark);
+            font: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--pink-accent-dark);
+            background-color: #f9dce3;
+            box-shadow: 0 0 0 3px rgba(96, 53, 47, 0.12);
+        }
+        input::placeholder {
+            color: #76504d;
+            opacity: 0.8;
+        }
+        button {
+            background: linear-gradient(135deg, var(--pink-accent), var(--pink-accent-dark));
+            color: var(--pink-bg);
+            border: 1px solid rgba(36, 18, 15, 0.12);
+            padding: 12px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            box-shadow: 0 4px 10px rgba(36, 18, 15, 0.18);
+        }
+        button:hover { 
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+            box-shadow: 0 7px 15px rgba(36, 18, 15, 0.22);
+        }
+        button:active {
+            transform: translateY(1px) scale(0.99);
+        }
+        button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid rgba(96, 53, 47, 0.45);
+            outline-offset: 2px;
+        }
+        .btn-danger { background: #75413c; }
+        .btn-edit { background: #603c36; }
+        .btn-small { padding: 6px 12px; font-size: 12px; margin-left: 5px; box-shadow: none; }
+        .participant-form {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .participant-form input { flex: 1; min-width: 0; }
+        .expense-item {
+            display: block;
+        }
+        .list-item.expense-item { display: block; }
+        .expense-heading {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .expense-title {
+            flex: 1;
+            color: var(--brown-dark);
+            line-height: 1.45;
+        }
+        .expense-actions {
+            min-width: 75px;
+            text-align: right;
+            white-space: nowrap;
+        }
+        .expense-details {
+            margin-top: 6px;
+            color: var(--brown);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .bill-amount {
+            display: inline-block;
+            margin-top: 4px;
+            color: var(--brown-dark);
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(199, 127, 144, 0.55);
+        }
+        .list-item:last-child { border-bottom: none; }
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin-bottom: 15px;
+            background: var(--pink-field);
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid var(--pink-border);
+        }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; padding: 6px; font-size: 14px; cursor: pointer; }
+        .checkbox-item input { width: auto; margin: 0; accent-color: var(--pink-accent); cursor: pointer; }
+        
+        /* Tagihan / Settlement styling */
+        .tagihan-item {
+            background: var(--pink-field);
+            border: 1px solid rgba(199, 127, 144, 0.65);
+            border-left: 4px solid var(--pink-accent);
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 3px 10px rgba(36, 18, 15, 0.08);
+        }
+        .tagihan-item.selesai {
+            background: var(--brown-soft); border-left: 4px solid var(--brown); opacity: 1;
+            box-shadow: none;
+        }
+        .tagihan-item.selesai .text { text-decoration: line-through; color: var(--brown); }
+        .checkbox-selesai { transform: scale(1.6); cursor: pointer; accent-color: var(--pink-accent); }
+        .empty-state { text-align: center; color: var(--brown); font-style: italic; font-size: 14px; }
+        @keyframes card-enter {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float-money {
+            0% { opacity: 0; transform: translate3d(0, 0, 0) rotate(-10deg); }
+            15% { opacity: 0.6; }
+            50% { transform: translate3d(18px, -55vh, 0) rotate(8deg); }
+            85% { opacity: 0.5; }
+            100% { opacity: 0; transform: translate3d(-12px, -110vh, 0) rotate(-8deg); }
+        }
+        @keyframes title-pop-in {
+            0% { opacity: 0; transform: scale(0.78) translateY(14px); }
+            65% { opacity: 1; transform: scale(1.06) translateY(-3px); }
+            85% { transform: scale(0.98) translateY(1px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .intro-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 5;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: var(--pink-bg);
+            transition: opacity 0.45s ease, visibility 0.45s ease;
+        }
+        .intro-screen.leaving {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .intro-card {
+            width: min(100%, 460px);
+            padding: 38px 28px;
+            border: 2px dashed var(--pink-border);
+            border-radius: 28px;
+            background: var(--pink-soft);
+            box-shadow: 0 16px 40px rgba(36, 18, 15, 0.18);
+            text-align: center;
+            animation: intro-pop 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+        .intro-flower {
+            display: inline-block;
+            margin-bottom: 12px;
+            font-size: 48px;
+            animation: flower-sway 2.5s ease-in-out infinite alternate;
+        }
+        .intro-title {
+            margin: 0;
+            color: var(--brown-dark);
+            font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+            font-size: clamp(30px, 7vw, 38px);
+            line-height: 1.15;
+        }
+        .intro-description {
+            max-width: 340px;
+            margin: 16px auto 24px;
+            color: var(--brown);
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .intro-button {
+            min-width: 160px;
+            padding: 14px 24px;
+            font-size: 16px;
+        }
+        @keyframes intro-pop {
+            0% { opacity: 0; transform: scale(0.82) translateY(18px); }
+            70% { opacity: 1; transform: scale(1.04) translateY(-3px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes flower-sway {
+            from { transform: rotate(-8deg) translateY(0); }
+            to { transform: rotate(8deg) translateY(-5px); }
+        }
+        .bill-success {
+            position: relative;
+            overflow: hidden;
+            margin-top: 18px;
+            padding: 20px 16px;
+            border: 2px solid var(--pink-border);
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--pink-bg), var(--pink-light));
+            color: var(--brown-dark);
+            text-align: center;
+            animation: success-pop 0.65s ease-out both;
+        }
+        .bill-success-icon {
+            display: inline-block;
+            font-size: 36px;
+            animation: success-bounce 1s ease-in-out infinite alternate;
+        }
+        .bill-success-message {
+            display: block;
+            margin-top: 8px;
+            font-family: 'Palatino Linotype', 'Book Antiqua', Georgia, serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .bill-success-sparkle {
+            position: absolute;
+            color: var(--pink-accent);
+            animation: sparkle-float 2s ease-in-out infinite;
+        }
+        .bill-success-sparkle:first-child { top: 12px; left: 18px; }
+        .bill-success-sparkle:last-child { right: 18px; bottom: 12px; animation-delay: 0.7s; }
+        @keyframes success-pop {
+            from { opacity: 0; transform: scale(0.85) translateY(12px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes success-bounce {
+            from { transform: translateY(0) rotate(-8deg); }
+            to { transform: translateY(-7px) rotate(8deg); }
+        }
+        @keyframes sparkle-float {
+            0%, 100% { opacity: 0.45; transform: scale(0.8) rotate(0); }
+            50% { opacity: 1; transform: scale(1.2) rotate(20deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .floating-decorations span, .card, h1, .intro-card, .intro-flower, .bill-success, .bill-success-icon, .bill-success-sparkle {
+                animation: none;
+            }
+            .card, button, .intro-screen { transition: none; }
+        }
+        @media (max-width: 480px) {
+            h1 { font-size: clamp(26px, 6vw, 30px); }
+            body { padding: 16px 12px; }
+            .container { border-radius: 22px; }
+            .participant-form { gap: 8px; }
+            .participant-form button { padding-inline: 12px; }
+            .expense-heading { align-items: flex-start; }
+            .expense-actions { min-width: auto; }
+            .expense-actions .btn-small { padding-inline: 8px; }
+            .intro-card { padding: 32px 22px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-decorations" aria-hidden="true">
+        <span>💸</span>
+        <span>💵</span>
+        <span>🪙</span>
+        <span>💰</span>
+        <span>💴</span>
+        <span>💸</span>
+    </div>
+
+    <section class="intro-screen" id="introScreen" aria-labelledby="introTitle">
+        <div class="intro-card">
+            <span class="intro-flower" aria-hidden="true">🌷</span>
+            <h1 class="intro-title" id="introTitle">Patungan Jadi Lebih Mudah</h1>
+            <p class="intro-description">Catat jajan bareng, bagi tagihan dengan mudah, dan nikmati waktu bersama tanpa ribet! 🎀</p>
+            <button class="intro-button" type="button" onclick="mulaiAplikasi()">Masuk ke Menu 💕</button>
+        </div>
+    </section>
+
+    <div class="container" id="appMain" hidden aria-hidden="true">
+        <h1>🌷 Patungan Jadi Lebih Mudah 🎀</h1>
+
+        <!-- BAGIAN 1: KELOLA PESERTA -->
+        <div class="card">
+            <h2>👥 Daftar Nama</h2>
+            <div class="participant-form">
+                <input type="text" id="inputPeserta" placeholder="Masukkan nama...">
+                <button onclick="tambahPeserta()" style="white-space: nowrap;">+ Tambah</button>
+            </div>
+            <div id="listPeserta"></div>
+        </div>
+
+        <!-- BAGIAN 2: KELOLA PENGELUARAN -->
+        <div class="card">
+            <h2 id="judulFormPengeluaran">🛍️ Catat Jajan Kita</h2>
+            <input type="hidden" id="editPengeluaranId">
+            <input type="text" id="keterangan" placeholder="Jajan apa nih? (Makan, Nonton, dll) 🍿">
+            <input type="text" id="jumlah" inputmode="numeric" placeholder="Total Habisnya (Rp), contoh: 1.000.000 💸" oninput="formatJumlah(this)">
+            <input type="date" id="tanggal">
+            
+            <label><strong>Siapa yang nalangin duluan? 🦸‍♀️</strong></label>
+            <select id="pembayar"></select>
+
+            <label style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+                <strong>Siapa aja yang ikutan jajan? 🙋‍♀️️</strong>
+                <button type="button" class="btn-small" onclick="centangSemua()" style="background-color: #75413c;">Pilih Semua</button>
+            </label>
+            <div class="checkbox-group" id="tanggunganContainer"></div>
+
+            <button onclick="simpanPengeluaran()" style="width: 100%; margin-top: 10px;" id="btnSimpanPengeluaran">💖 Simpan Catatan</button>
+            <button onclick="batalEdit()" class="btn-danger" style="width: 100%; margin-top: 10px; display: none;" id="btnBatalEdit">Batal Edit ❌</button>
+        </div>
+
+        <div class="card">
+            <h2>🧾 Histori Jajan Kita</h2>
+            <div id="listPengeluaran"></div>
+        </div>
+
+        <!-- BAGIAN 3: HASIL HITUNGAN & TAGIHAN -->
+        <div class="card">
+            <h2 style="color: #351b17;"> Bayar ke Siapa Nih?</h2>
+            <div id="listTagihan"></div>
+        </div>
+    </div>
+
+    <script>
+        let peserta = JSON.parse(localStorage.getItem('peserta')) || [];
+        let pengeluaran = JSON.parse(localStorage.getItem('pengeluaran')) || [];
+        let riwayatSelesai = JSON.parse(localStorage.getItem('riwayatSelesai')) || [];
+
+        function simpanData() {
+            localStorage.setItem('peserta', JSON.stringify(peserta));
+            localStorage.setItem('pengeluaran', JSON.stringify(pengeluaran));
+            localStorage.setItem('riwayatSelesai', JSON.stringify(riwayatSelesai));
+            renderSemua();
+        }
+
+        function mulaiAplikasi() {
+            const intro = document.getElementById('introScreen');
+            const app = document.getElementById('appMain');
+            app.hidden = false;
+            app.setAttribute('aria-hidden', 'false');
+            intro.classList.add('leaving');
+            document.body.style.overflow = '';
+
+            const delay = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 450;
+            window.setTimeout(() => {
+                intro.hidden = true;
+                document.getElementById('inputPeserta').focus({ preventScroll: true });
+            }, delay);
+        }
+
+        // --- FITUR PESERTA ---
+        function tambahPeserta() {
+            const nama = document.getElementById('inputPeserta').value.trim();
+            if (!nama) return alert('Nama jangan dikosongin ya! 🥺');
+            
+            peserta.push({ id: Date.now().toString(), nama: nama });
+            document.getElementById('inputPeserta').value = '';
+            simpanData();
+        }
+
+        function editPeserta(id) {
+            const index = peserta.findIndex(p => p.id === id);
+            const namaBaru = prompt('Edit nama:', peserta[index].nama);
+            if (namaBaru && namaBaru.trim() !== '') {
+                peserta[index].nama = namaBaru.trim();
+                simpanData();
+            }
+        }
+
+        function hapusPeserta(id) {
+            const sedangDipakai = pengeluaran.some(p => p.pembayarId === id || p.penanggungIds.includes(id));
+            if (sedangDipakai) {
+                alert('TIDAK BISA DIHAPUS 🙅‍♀️: Nama ini masih ada sangkut paut sama jajan kita. Hapus atau edit pengeluarannya dulu ya!');
+                return;
+            }
+
+            if (confirm('Yakin nih mau hapus nama ini dari list? 🥺')) {
+                peserta = peserta.filter(p => p.id !== id);
+                simpanData();
+            }
+        }
+
+        // --- FITUR PENGELUARAN ---
+        function centangSemua() {
+            const checkboxes = document.querySelectorAll('.cb-tanggungan');
+            checkboxes.forEach(cb => cb.checked = true);
+        }
+
+        function formatJumlah(input) {
+            const digitSebelumKursor = input.value.slice(0, input.selectionStart).replace(/\D/g, '').length;
+            const digits = input.value.replace(/\D/g, '');
+            const formatted = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            input.value = formatted;
+
+            let posisiKursor = 0;
+            let jumlahDigit = 0;
+            while (posisiKursor < formatted.length && jumlahDigit < digitSebelumKursor) {
+                if (/\d/.test(formatted[posisiKursor])) jumlahDigit++;
+                posisiKursor++;
+            }
+            input.setSelectionRange(posisiKursor, posisiKursor);
+        }
+
+        function simpanPengeluaran() {
+            const editId = document.getElementById('editPengeluaranId').value;
+            const keterangan = document.getElementById('keterangan').value.trim();
+            const jumlah = Number(document.getElementById('jumlah').value.replace(/\./g, ''));
+            const tanggal = document.getElementById('tanggal').value;
+            const pembayarId = document.getElementById('pembayar').value;
+            
+            const penanggungIds = Array.from(document.querySelectorAll('.cb-tanggungan:checked')).map(cb => cb.value);
+
+            if (!keterangan || !jumlah || !tanggal || !pembayarId || penanggungIds.length === 0) {
+                return alert('Lengkapin datanya dulu ya, plus pilih minimal 1 orang yang ikutan jajan! 🌸');
+            }
+            if (!Number.isSafeInteger(jumlah) || jumlah <= 0) {
+                return alert('Jumlahnya harus berupa angka bulat lebih dari 0 ya! 🌸');
+            }
+
+            const dataPengeluaran = {
+                id: editId ? editId : Date.now().toString(),
+                keterangan, jumlah, tanggal, pembayarId, penanggungIds
+            };
+
+            if (editId) {
+                const index = pengeluaran.findIndex(p => p.id === editId);
+                pengeluaran[index] = dataPengeluaran;
+                batalEdit();
+            } else {
+                pengeluaran.push(dataPengeluaran);
+            }
+            
+            document.getElementById('keterangan').value = '';
+            document.getElementById('jumlah').value = '';
+            
+            simpanData();
+        }
+
+        function editPengeluaran(id) {
+            const p = pengeluaran.find(x => x.id === id);
+            document.getElementById('editPengeluaranId').value = p.id;
+            document.getElementById('keterangan').value = p.keterangan;
+            document.getElementById('jumlah').value = p.jumlah.toLocaleString('id-ID');
+            document.getElementById('tanggal').value = p.tanggal;
+            document.getElementById('pembayar').value = p.pembayarId;
+            
+            renderFormTanggungan(p.penanggungIds);
+
+            document.getElementById('judulFormPengeluaran').innerHTML = "✏️ Edit Jajan Kita";
+            document.getElementById('btnSimpanPengeluaran').innerHTML = "🌷 Update Catatan";
+            document.getElementById('btnBatalEdit').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function batalEdit() {
+            document.getElementById('editPengeluaranId').value = '';
+            document.getElementById('keterangan').value = '';
+            document.getElementById('jumlah').value = '';
+            document.getElementById('judulFormPengeluaran').innerHTML = "🛍️ Catat Jajan Kita";
+            document.getElementById('btnSimpanPengeluaran').innerHTML = "💖 Simpan Catatan";
+            document.getElementById('btnBatalEdit').style.display = 'none';
+            renderSemua();
+        }
+
+        function hapusPengeluaran(id) {
+            if (confirm('Yakin mau hapus catatan jajan ini? Nanti hitungannya bakal berubah lho! 🌸')) {
+                pengeluaran = pengeluaran.filter(p => p.id !== id);
+                simpanData();
+            }
+        }
+
+        // --- FITUR TAGIHAN & HITUNGAN ---
+        function toggleSelesai(idTagihan, isChecked) {
+            if (isChecked) {
+                riwayatSelesai.push(idTagihan);
+            } else {
+                riwayatSelesai = riwayatSelesai.filter(id => id !== idTagihan);
+            }
+            simpanData();
+        }
+
+        // --- RENDER UI ---
+        const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        
+        function getNama(id) {
+            const p = peserta.find(x => x.id === id);
+            return p ? p.nama : 'Dihapus';
+        }
+
+        function renderFormTanggungan(checkedIds = []) {
+            const container = document.getElementById('tanggunganContainer');
+            container.innerHTML = '';
+            peserta.forEach(p => {
+                const isChecked = checkedIds.length === 0 || checkedIds.includes(p.id) ? 'checked' : '';
+                container.innerHTML += `
+                    <label class="checkbox-item">
+                        <input type="checkbox" class="cb-tanggungan" value="${p.id}" ${isChecked}> ${p.nama}
+                    </label>
+                `;
+            });
+
+            const dropdown = document.getElementById('pembayar');
+            const currentValue = dropdown.value;
+            dropdown.innerHTML = peserta.map(p => `<option value="${p.id}">${p.nama}</option>`).join('');
+            if (currentValue && peserta.find(x => x.id === currentValue)) {
+                dropdown.value = currentValue;
+            }
+        }
+
+        function renderSemua() {
+            const listP = document.getElementById('listPeserta');
+            listP.innerHTML = peserta.length === 0 ? '<p class="empty-state">Belum ada nama yang dimasukkan nih~ 🌷</p>' : '';
+            peserta.forEach(p => {
+                listP.innerHTML += `
+                    <div class="list-item">
+                        <strong>${p.nama}</strong>
+                        <div>
+                            <button class="btn-small btn-edit" onclick="editPeserta('${p.id}')">✏️</button>
+                            <button class="btn-small btn-danger" onclick="hapusPeserta('${p.id}')">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (!document.getElementById('editPengeluaranId').value) {
+                renderFormTanggungan(peserta.map(p => p.id));
+            }
+            if(!document.getElementById('tanggal').value) {
+                document.getElementById('tanggal').valueAsDate = new Date();
+            }
+
+            const listE = document.getElementById('listPengeluaran');
+            listE.innerHTML = pengeluaran.length === 0 ? '<p class="empty-state">Belum ada jajan-jajan~ 🍡</p>' : '';
+            pengeluaran.forEach(p => {
+                listE.innerHTML += `
+                    <div class="list-item expense-item">
+                        <div class="expense-heading">
+                            <strong class="expense-title">${p.keterangan} - ${formatRp(p.jumlah)}</strong>
+                            <div class="expense-actions">
+                                <button class="btn-small btn-edit" onclick="editPengeluaran('${p.id}')">✏️</button>
+                                <button class="btn-small btn-danger" onclick="hapusPengeluaran('${p.id}')">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="expense-details">
+                            📅 ${p.tanggal} | Nalangin: <b>${getNama(p.pembayarId)}</b><br>
+                            👯‍♀️ Ikutan: ${p.penanggungIds.map(id => getNama(id)).join(', ')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            let saldo = {};
+            peserta.forEach(p => saldo[p.id] = 0);
+
+            pengeluaran.forEach(p => {
+                if (saldo[p.pembayarId] !== undefined) saldo[p.pembayarId] += p.jumlah;
+                const perOrang = p.jumlah / p.penanggungIds.length;
+                p.penanggungIds.forEach(id => {
+                    if (saldo[id] !== undefined) saldo[id] -= perOrang;
+                });
+            });
+
+            let yangHutang = [];
+            let yangPiutang = [];
+            for (let id in saldo) {
+                if (saldo[id] < -0.1) yangHutang.push({ id, jumlah: Math.abs(saldo[id]) });
+                if (saldo[id] > 0.1) yangPiutang.push({ id, jumlah: saldo[id] });
+            }
+
+            const listT = document.getElementById('listTagihan');
+            listT.innerHTML = '';
+            let adaTagihan = false;
+            let adaTagihanBelumLunas = false;
+
+            let i = 0, j = 0;
+            while (i < yangHutang.length && j < yangPiutang.length) {
+                adaTagihan = true;
+                let hutang = yangHutang[i];
+                let piutang = yangPiutang[j];
+                let nominal = Math.min(hutang.jumlah, piutang.jumlah);
+
+                let idTagihan = `${hutang.id}_bayar_${piutang.id}`;
+                let isSelesai = riwayatSelesai.includes(idTagihan);
+                if (!isSelesai) adaTagihanBelumLunas = true;
+                
+                listT.innerHTML += `
+                    <div class="tagihan-item ${isSelesai ? 'selesai' : ''}">
+                        <div class="text">
+                            <strong>${getNama(hutang.id)}</strong> transfer ke <strong>${getNama(piutang.id)}</strong>
+                            <br> <span class="bill-amount">${formatRp(nominal)}</span>
+                        </div>
+                        <div>
+                            <input type="checkbox" class="checkbox-selesai" title="Udah Lunas Nih!" 
+                                onchange="toggleSelesai('${idTagihan}', this.checked)" ${isSelesai ? 'checked' : ''}>
+                        </div>
+                    </div>
+                `;
+
+                hutang.jumlah -= nominal;
+                piutang.jumlah -= nominal;
+
+                if (hutang.jumlah < 0.1) i++;
+                if (piutang.jumlah < 0.1) j++;
+            }
+
+            if (!adaTagihan) {
+                listT.innerHTML = '<p class="empty-state">Belum ada tagihan patungan~ 🌸</p>';
+            } else if (!adaTagihanBelumLunas) {
+                listT.innerHTML += `
+                    <div class="bill-success" role="status" aria-live="polite">
+                        <span class="bill-success-sparkle" aria-hidden="true">🌷</span>
+                        <span class="bill-success-icon" aria-hidden="true">🎉</span>
+                        <span class="bill-success-message">The bill is fully split and paid!</span>
+                        <span class="bill-success-sparkle" aria-hidden="true">🌷</span>
+                    </div>
+                `;
+            }
+        }
+
+        renderSemua();
+    </script>
+</body>
+</html>
